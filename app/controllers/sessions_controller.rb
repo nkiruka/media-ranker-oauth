@@ -1,10 +1,13 @@
 class SessionsController < ApplicationController
+  skip_before_action :require_login
+
+
   def create
     auth_hash = request.env['omniauth.auth']
 
     if auth_hash['uid']
       user = User.find_by(provider: params[:provider], uid: auth_hash['uid'])
-      if user.nil?
+      if user.nil? # can also be unless user
         # User has not logged in before
         # Create a new record in the DB
         user = User.from_auth_hash(params[:provider], auth_hash)
